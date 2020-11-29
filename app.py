@@ -8,6 +8,11 @@ from models import TokenModel
 import jwt
 from datetime import datetime
 import os
+from flask import Flask, jsonify, request
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 
 
 
@@ -15,10 +20,10 @@ import os
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'dado'
+app.config['JWT_SECRET_KEY'] = 'dado'
 api = Api(app)
 db.init_app(app)
-#jwt = JWT(app, authenticate, identity)
+jwt = JWTManager(app)
 
 """
 primi post request, pokupi mi username i password
@@ -29,7 +34,7 @@ vrati odgovor token
 """
 
 
-@app.route('/users', methods=['POST'])
+@app.route('/token', methods=['POST'])
 def get_user():
     if request.method == 'POST':
 
@@ -46,16 +51,16 @@ def get_user():
 
         if response.status_code == 200:
 
-            token1 = TokenModel(username=data['username'],
-                        token=jwt.encode({'some': 'payload'}, app.config['SECRET_KEY'], algorithm='HS256'))
+            access_token = create_access_token(identity=username)
+            return jsonify(access_token=access_token), 200
 
             try:
-                token1.save_to_db()
+                access_token.save_to_db()
             except:
                 return {'message': "An error occured inserting the token."}, 500
 
 
-            return jsonify({'token': token.decode(UTF-8)})
+
 
 
         else:
