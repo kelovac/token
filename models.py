@@ -7,12 +7,12 @@ class TokenModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80))
     token = db.Column(db.String(80))
-    token_expires = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
+    #token_expires = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
 
     def __init__(self, username, token):
         self.username = username
         self.token = token
-        self.token_expires = datetime.now()
+        #self.token_expires = datetime.now()
 
     def get_token(self):
         return {'username': self.username,

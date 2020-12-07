@@ -52,14 +52,15 @@ def get_user():
         if response.status_code == 200:
 
             access_token = create_access_token(identity=username)
-            return jsonify(access_token=access_token), 200
+            new_token = TokenModel(username=username, token=access_token)
 
             try:
-                access_token.save_to_db()
+                new_token.save_to_db()
+
             except:
                 return {'message': "An error occured inserting the token."}, 500
 
-
+            return jsonify(access_token=access_token), 200
 
 
 
@@ -80,4 +81,4 @@ def check_token():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5001, debug=True)
+    app.run(port=5001, debug=True)
