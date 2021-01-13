@@ -4,18 +4,11 @@ from flask_restful import Api
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import TokenModel
-#from security import authenticate, identity
-import jwt
+from security import authenticate, identity
 from datetime import datetime
 import os
 from flask import Flask, jsonify, request
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
-)
-
-
-
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
@@ -52,17 +45,16 @@ def get_user():
         if response.status_code == 200:
 
             access_token = create_access_token(identity=username)
-            new_token = TokenModel(username=username, token=access_token)
 
             try:
+                new_token = TokenModel(username=username, token=access_token)
                 new_token.save_to_db()
 
-            except:
+            except Exception as e:
+                return {"error": str(e)}
                 return {'message': "An error occured inserting the token."}, 500
 
             return jsonify(access_token=access_token), 200
-
-
 
         else:
             return response.json(), 400
@@ -70,14 +62,27 @@ def get_user():
     return "ss"
 
 
-
-
+@app.route("/check_token", methods=['POST', 'GET', 'PUT', 'DELETE'])
 def check_token():
-    """
-    iz druge app mi stize token
-    radim proveru u bazi da li token postoji
-    ako postoji odg sa True, ako ne sa False
-    """
+    token = None
+    if 'x-access-token' in request.headers:
+        token = request.headers['x-access-token']
+
+    if not token:
+        return jsonify({'message': 'Token is missing'}), 401
+
+    try:
+        current_token = TokenModel.find_by_token(token=request.headers.get('x-access-token'))
+    except:
+        return jsonify({'message': 'Token is invalid'}), 401
+
+    return current_token.get_token(), 200
+
+    #"""
+    #iz druge app mi stize token
+    #radim proveru u bazi da li token postoji
+    #ako postoji odg sa True, ako ne sa False
+    #"""
 
 
 if __name__ == '__main__':

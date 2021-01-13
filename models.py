@@ -1,18 +1,19 @@
 from db import db
-from datetime import datetime
+from datetime import datetime, timedelta
+
 
 class TokenModel(db.Model):
-    __tablename__ = 'token'
+    __tablename__ = 'token1'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80))
-    token = db.Column(db.String(80))
-    #token_expires = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow())
+    token = db.Column(db.String(500))
+    token_expires = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow() + timedelta(minutes=30))
 
     def __init__(self, username, token):
         self.username = username
         self.token = token
-        #self.token_expires = datetime.now()
+        self.token_expires = datetime.now()
 
     def get_token(self):
         return {'username': self.username,
@@ -25,6 +26,10 @@ class TokenModel(db.Model):
     @classmethod
     def find_by_id(cls, _id):
         return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_by_token(cls, token):
+        return cls.query.filter_by(token=token).first()
 
     def save_to_db(self):
         db.session.add(self)

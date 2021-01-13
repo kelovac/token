@@ -1,6 +1,9 @@
 version: "3.8"
 services:
   web:
+    environment:
+      APP_SETTINGS: ${APP_SETTINGS}
+      DATABASE_URL: ${DATABASE_URL}
     build: .
     ports:
       - "5001:5001"
