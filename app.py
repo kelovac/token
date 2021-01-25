@@ -50,8 +50,7 @@ def get_user():
                 new_token = TokenModel(username=username, token=access_token)
                 new_token.save_to_db()
 
-            except Exception as e:
-                return {"error": str(e)}
+            except:
                 return {'message': "An error occured inserting the token."}, 500
 
             return jsonify(access_token=access_token), 200
@@ -71,12 +70,12 @@ def check_token():
     if not token:
         return jsonify({'message': 'Token is missing'}), 401
 
-    try:
-        current_token = TokenModel.find_by_token(token=request.headers.get('x-access-token'))
-    except:
-        return jsonify({'message': 'Token is invalid'}), 401
+    current_token = TokenModel.find_by_token(token=request.headers.get('x-access-token'))
 
-    return current_token.get_token(), 200
+    if current_token:
+        return current_token.get_token(), 200
+
+    return jsonify({'message': 'Token is invalid'}), 401
 
     #"""
     #iz druge app mi stize token
