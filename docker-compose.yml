@@ -1,9 +1,30 @@
 version: "3.8"
 services:
-  web:
+  web1:
     environment:
       APP_SETTINGS: ${APP_SETTINGS}
       DATABASE_URL: ${DATABASE_URL}
+    container_name: token
     build: .
     ports:
       - "5001:5001"
+    networks:
+      - dadova-mreza
+    volumes:
+    - "./migrations:/usr/src/app/migrations"
+  postgres_token:
+    environment:
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "provera"
+    image: 'postgres'
+    ports:
+      - "5434:5432"
+    networks:
+      - dadova-mreza
+    volumes:
+      - "./database:/var/lib/postgresql/data"
+
+networks:
+  dadova-mreza:
+    external:
+      name: dadova-mreza

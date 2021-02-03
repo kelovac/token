@@ -40,7 +40,7 @@ def get_user():
         "username": username,
         "password": password}
 
-        response = requests.post('http://127.0.0.1:5000/login', json=payload)
+        response = requests.post('http://users:5000/login', json=payload)
 
         if response.status_code == 200:
 
@@ -85,4 +85,4 @@ def check_token():
 
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)

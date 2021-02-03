@@ -13,11 +13,12 @@ class TokenModel(db.Model):
     def __init__(self, username, token):
         self.username = username
         self.token = token
-        self.token_expires = datetime.now()
+        self.token_expires = datetime.now() + timedelta(minutes=30)
 
     def get_token(self):
         return {'username': self.username,
-                'token': self.token}
+                'token': self.token,
+                'token_expires': self.token_expires}
 
     @classmethod
     def find_by_username(cls, username):
